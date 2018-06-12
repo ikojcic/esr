@@ -22,14 +22,13 @@ def load_models(models_path):
          the same as the number of vertices in the mesh
     """
 
-    all_models = []   # list of models (list of classes)
+    all_models = []
     models_path = "/user/ikojcic/home/src/MARS/models_dir"
     all_paths = [join(models_path, model_id) for model_id in listdir(models_path)]
     # model_id ='model1', 'model2',...
 
 
     for model_path in all_paths:
-        # model_path = "/user/ikojcic/home/src/MARS/models_dir/model1"
         model = Model()
         for file in listdir(model_path):
             if file.endswith(".gii"):

@@ -32,7 +32,7 @@ class TestModels(unittest.TestCase):
     """Test the esr.model module"""
 
     def test_load_model(self):
-        """Test the function load_model"""
+        """Test the function load_model."""
 
         # Generate artificial mesh (cortex) & forward operator
         cortex = minimal_mesh()
@@ -50,7 +50,7 @@ class TestModels(unittest.TestCase):
         cortex.transform_to(CoordinateSystem.RAS)
 
         # Work in a temporary directory. This guarantees cleanup even on error.
-        #  with tempfile.TemporaryDirectory() as directory:
+        # with tempfile. TemporaryDirectory() as directory:
         with tempfile.TemporaryDirectory() as directory:
 
             cortex_name = os.path.join(directory, 'c.gii')
@@ -64,21 +64,19 @@ class TestModels(unittest.TestCase):
             loaded_forward = pd.read_hdf(forward_name).as_matrix()
             loaded_model = esr.load_model(directory)
 
-            print(loaded_cortex)
-            print(loaded_forward)
 
-            # Verify  if the number of columns in forward operator is the same
-            #  as the number of vertices in the mesh.
             self.assertEqual(model.cortex.nb_vertices,
                              loaded_cortex.nb_vertices)
             self.assertEqual(model.cortex.nb_triangles,
                              loaded_cortex.nb_triangles)
+            # The number of columns in forward operator must be the same
+            # as the number of vertices in the mesh.
             self.assertEqual(len(np.asarray(loaded_cortex.vertices)),
                              loaded_forward.shape[1])
-
+            np.testing.assert_array_almost_equal(model.forward, loaded_forward)
 
         with tempfile.TemporaryDirectory() as directory:
-            # No .gii or hdf files
-            # this if load_model function fails to be executed then this test
-            # is successful
+            # No .gii or hdf files.
+            # If load_model function fails to be executed then this test
+            # is successful.
             self.assertRaises(TypeError, esr.load_model, directory)

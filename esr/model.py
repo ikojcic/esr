@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon May 28 12:02:59 2018
-
-@author: ikojcic
-"""
 
 import numpy as np
 from os import listdir
@@ -29,9 +22,9 @@ def load_model(model_path):
         Raises:
              TypeError: If cortex or forward operator don't exist or they 
              are not in the correct format (.gii for cortex and HDF for
-             forward operator)
+             forward operator).
              ValueError: Number of columns in forward operator has to be 
-             the same as the number of vertices in the mesh
+             the same as the number of vertices in the mesh.
         """
         
         model = Model()

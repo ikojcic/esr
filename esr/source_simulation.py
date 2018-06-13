@@ -66,18 +66,17 @@ class SourceSimulator:
         self.sources = sources
         self.waveform = waveform
 
-    def description(self):
-        return "Cortex: {}\n Forward operator: {}".format(self.model.cortex,
-                                                       self.model.forward)
-
     def simulate(self):
+        """Simulate source activity."""
+
         raise NotImplementedError
 
 
 class PointSourceSimulator(SourceSimulator):
+    """Point source simulator."""
 
     def simulate(self):
-        """Point source simulator."""
+        """Simulate source activity as a point source."""
         
         T = len(self.waveform)
         X = np.zeros((self.nb_sources, T))
@@ -120,6 +119,8 @@ class SpreadSourceSimulator(SourceSimulator):
 
 
     def simulate(self):
+        """Simulate source activity as a spread source."""
+
         T = len(self.waveform)
         X = np.zeros((self.nb_sources, T))
         for source1_id in self.sources:

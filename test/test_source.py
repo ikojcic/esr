@@ -102,12 +102,13 @@ class TestPointSourceSimulator(unittest.TestCase):
         X = np.zeros((model.cortex.nb_vertices, T))
         X[0:2, :] = waveform
 
-        PSS = PointSourceSimulator(model, sources = sources, waveform =waveform)
+        PSS = PointSourceSimulator(model, sources=sources, waveform=waveform)
         X_pss = PSS.simulate()
         np.testing.assert_array_almost_equal(X_pss, X)
 
 
 class TestSpreadSourceSimulator(unittest.TestCase):
+    """Test the esr.SpreadSourceSimulator class."""
 
     def test_init(self):
         """Test the init method."""
@@ -144,8 +145,8 @@ class TestSpreadSourceSimulator(unittest.TestCase):
         X[2, :] = decay[1]
         X[3, :] = decay[2]
 
-        SSS = SpreadSourceSimulator(model, sources = sources,
-                                    waveform = waveform, decay = decay)
+        SSS = SpreadSourceSimulator(model, sources=sources,waveform=waveform,
+                                    decay=decay)
         X_sss = SSS.simulate()
         np.testing.assert_array_almost_equal(X_sss, X)
 

@@ -16,9 +16,6 @@ class SourceSimulator:
              simulation signal. Must be a sequence convertible to a 1D numpy
              array of floats.
 
-             decay (optional): Spread weights. Describes the spreading of
-             source activity to its neighbours. It must be a list or a 1D
-             numpy array of floats in descending order.
         Raises:
              ValueError: If sources are not: an integer, 1D numpy array of
              integers or a list of integers.
@@ -80,6 +77,8 @@ class SourceSimulator:
 class PointSourceSimulator(SourceSimulator):
 
     def simulate(self):
+        """Point source simulator."""
+        
         T = len(self.waveform)
         X = np.zeros((self.nb_sources, T))
         for source_id in self.sources:
@@ -90,6 +89,16 @@ class PointSourceSimulator(SourceSimulator):
 class SpreadSourceSimulator(SourceSimulator):
 
     def __init__(self, model, sources = 0, waveform = None, decay= None):
+        """
+        Spread source simulator.
+        Args: decay (optional): Spread weights. Describes the spreading of
+             source activity to its neighbours. It must be a list or a 1D
+             numpy array of floats in descending order.
+        Raises:
+            ValueError: If decay is a numpy array which is not 1D.
+                        If decay is not in descending order.
+        """
+
         if decay is None:
             decay = np.array([1, 0.7, 0.3])
         elif isinstance(decay, np.ndarray):

@@ -1,6 +1,4 @@
 import numpy as np
-import esr
-
 
 
 class NoiseSimulator():
@@ -28,6 +26,7 @@ class NoiseSimulator():
         self.m = m
 
     def add_noise(self):
+        """Returns simulated noisy measurements."""
         raise NotImplementedError
 
 
@@ -47,7 +46,7 @@ class GaussianNoiseSimulator(NoiseSimulator):
         try:
             SNR = float(SNR)
         except Exception:
-            raise ValueError('\'SNR\' must be convertible to  a float.')
+            raise ValueError('\'SNR\' must be convertible to a float.')
 
         super().__init__(m)
         self.SNR = SNR

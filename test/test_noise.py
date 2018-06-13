@@ -73,14 +73,16 @@ class TestNoiseSimulator(unittest.TestCase):
 
     def test_add_noise(self):
         """Test if the add_noise method is implemented."""
+
         self.assertRaises(NotImplementedError, NoiseSimulator.add_noise,
                           self)
 
 
 class TestGaussianNoiseSimulator(unittest.TestCase):
+    """Test the esr.GaussianNoiseSimulator class"""
 
     def test_init(self):
-        """Test the init method"""
+        """Test the init method."""
 
         m = simple_measurements()
         SNR = 15
@@ -107,9 +109,10 @@ class TestGaussianNoiseSimulator(unittest.TestCase):
 
 
 class TestNoiselessSimulator(unittest.TestCase):
-    """Test the add_noise method."""
+    """Test the esr.NoiselessSimulator class"""
 
     def test_add_noise(self):
+        """Test the add_noise method."""
         m = simple_measurements()
         noiseless_model = NoiselessSimulator(m)
         np.testing.assert_array_almost_equal(noiseless_model.m, m)

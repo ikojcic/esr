@@ -5,7 +5,9 @@ from os.path import join
 import nimesh
 import pandas as pd
 import numpy as np
-
+from esr.source_simulation import SourceSimulator
+from esr.source_simulation import PointSourceSimulator
+from esr.source_simulation import SpreadSourceSimulator
 
 
 def load_models(models_path):

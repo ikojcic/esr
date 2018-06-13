@@ -113,6 +113,7 @@ class TestNoiselessSimulator(unittest.TestCase):
 
     def test_add_noise(self):
         """Test the add_noise method."""
+        
         m = simple_measurements()
         noiseless_model = NoiselessSimulator(m)
         np.testing.assert_array_almost_equal(noiseless_model.m, m)

@@ -26,7 +26,6 @@ class NoiseSimulator():
         self.m = m
 
     def add_noise(self):
-        """Returns simulated noisy measurements."""
         raise NotImplementedError
 
 

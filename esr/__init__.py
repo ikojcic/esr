@@ -5,7 +5,9 @@ from os.path import join
 import nimesh
 import pandas as pd
 import numpy as np
-
+from esr.inverse_methods import InverseMethod
+from esr.inverse_methods import PseudoInverse
+from esr.inverse_methods import TikhonovInverse
 
 
 def load_models(models_path):

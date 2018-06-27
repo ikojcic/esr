@@ -13,7 +13,9 @@ class Model:
             cortex : Mesh object.
             forward : Forward operator (gain matrix).
         Raises:
-            ValueError: Number of columns in forward operator has to be
+            TypeError: Cortex must be a Mesh object.
+                       Forward must be convertible to a numpy array of floats.
+            ValueError: Number of columns in the forward operator has to be
             the same as the number of vertices in the mesh.
         """
         if not isinstance(cortex, Mesh):

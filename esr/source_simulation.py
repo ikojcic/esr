@@ -1,4 +1,5 @@
 import numpy as np
+from esr.model import Model
 
 class SourceSimulator:
 
@@ -26,9 +27,8 @@ class SourceSimulator:
              NotImplementedError: If simulate method is not implemented in
              the child class.
         """
-
-        self.model = model
-        self.nb_sources = np.asarray(self.model.cortex.nb_vertices)
+        if not isinstance(model, Model):
+            raise TypeError('\'model\' must be an instance of class Model.')
 
         if isinstance(sources, int):
             sources = [sources]
@@ -53,18 +53,32 @@ class SourceSimulator:
 
         if waveform is None:
             waveform = np.sin(np.linspace(0, 2*np.pi, 1000))
-        elif isinstance(waveform, np.ndarray) and waveform.ndim != 1:
-                raise ValueError('\'waveform\' must have a dimension 1, '
-                                 ' not {}. '.format(waveform.ndim))
+
         elif isinstance(waveform, np.ndarray) == False:
             try:
-                waveform = np.array(waveform, dtype = np.float64)
+                waveform = np.array(waveform, dtype=np.float64)
             except Exception:
                 raise TypeError('\'waveform\' must be convertible to a numpy '
                                 'array of floats.')
+            if waveform.ndim != 1:
+                raise ValueError('\'waveform\' must have a dimension 1, '
+                                 'not {}. '.format(waveform.ndim))
 
+        elif isinstance(waveform, np.ndarray) and waveform.ndim != 1:
+            # waveform = np.array([np.sin(t), np.exp(t)])
+                raise ValueError('\'waveform\' must have a dimension 1, '
+                                 'not {}. '.format(waveform.ndim))
+
+        self.model = model
         self.sources = sources
         self.waveform = waveform
+
+    @property
+    def nb_sources(self) -> int:
+        """Returns the number of sources, which is equal to number of vertices
+        in the mesh."""
+        return self.model.cortex.nb_vertices
+
 
     def simulate(self):
         """Simulate source activity."""

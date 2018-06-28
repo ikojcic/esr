@@ -31,7 +31,7 @@ def minimal_model():
     cortex = minimal_mesh()
     forward = np.array(np.ones((3, 4)))
     forward_df = pd.DataFrame(forward)
-    model = esr.model.Model()
+    model = esr.model.Model(cortex, forward_df)
     model.cortex = cortex
     model.forward = forward_df
 

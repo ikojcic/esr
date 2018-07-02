@@ -3,8 +3,18 @@ from esr.model import load_model
 from esr.model import minimal_mesh
 from os import listdir
 from os.path import join
+
 from esr.metrics import Metric
 from esr.metrics import L2norm
+from esr.inverse_methods import InverseMethod
+from esr.inverse_methods import PseudoInverse
+from esr.inverse_methods import TikhonovInverse
+from esr.source_simulation import SourceSimulator
+from esr.source_simulation import PointSourceSimulator
+from esr.source_simulation import SpreadSourceSimulator
+from esr.noise_simulation import NoiseSimulator
+from esr.noise_simulation import GaussianNoiseSimulator
+from esr.noise_simulation import NoiselessSimulator
 
 
 def load_models(models_path):

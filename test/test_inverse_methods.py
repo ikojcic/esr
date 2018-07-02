@@ -30,7 +30,7 @@ def minimal_model():
     cortex = minimal_mesh()
     forward = np.eye(4)
     forward_df = pd.DataFrame(forward)
-    model = esr.model.Model()
+    model = esr.model.Model(cortex, forward_df)
     model.cortex = cortex
     model.forward = forward_df
 
@@ -86,7 +86,7 @@ class TestInverseMethod(unittest.TestCase):
         IM = InverseMethod(model, M)
 
         self.assertEqual(IM.model, model)
-        np.testing.assert_array_almost_equal(IM.M, M)
+        np.testing.assert_array_almost_equal(IM.measurements, M)
 
         # Model must be an instance of class Model.
         incorrect_model = FakeModel()

@@ -7,11 +7,11 @@ from decimal import Decimal
 
 class InverseMethod:
 
-    def __init__(self, model, M):
+    def __init__(self, model, measurements):
         """
         Parent class for inverse methods.
         Args:
-             M: Noisy measurements (M/EEG signals).
+             measurements: Noisy measurements (M/EEG signals).
              model: An instance of class Model.
         Raises:
              TypeError: If model is none or not an instance of class Model.
@@ -21,23 +21,25 @@ class InverseMethod:
              NotImplementedError: If compute method is not implemented in
              the child class.
         """
-        if model is None:
-            raise TypeError('\'model\' cannot be None.')
 
         if not isinstance(model, esr.Model):
             raise TypeError("The model you provided has to be an instance of "
                             "class Model.")
-        if M is None:
-            raise TypeError('\'M\' cannot be None.')
+        if not isinstance(measurements, np.ndarray):
+            try:
+                measurements = np.array(measurements, dtype=np.float64)
+            except Exception:
+                raise TypeError('\'measurements\' must be convertible to a '
+                                'numpy array of floats.')
+
 
         # Raise an error if model and measurements are not consistent.
-        if model.forward.shape[0] != M.shape[0]:
+        if model.forward.shape[0] != measurements.shape[0]:
             raise ValueError("Number of rows in forward operator must be the "
-                             "same as the number of rows in M (matrix of"
-                             "measurements)")
+                             "same as the number of rows in measurements")
 
         self.model = model
-        self.M = M
+        self.measurements = measurements
 
     def compute(self):
         raise NotImplementedError
@@ -52,7 +54,7 @@ class PseudoInverse(InverseMethod):
 
         G = np.asarray(self.model.forward)
         Gp = np.linalg.pinv(G)
-        Xh = np.dot(Gp, self.M)
+        Xh = np.dot(Gp, self.measurements)
 
         return Xh
 
@@ -65,19 +67,19 @@ def tikhonov(G, lambda_):
 
 class TikhonovInverse(InverseMethod):
 
-    def __init__(self, model, M, pl = 0):
+    def __init__(self, model, measurements, plot_lcurve = 0):
         """
         Tikhonov inverse solver.
         Args:
-             pl (optional): A parameter for plotting the L-curve. By default
-             pl = 0 and L-curve will not be plotted. If pl = 1 L-curve will be
-             plotted.
+             plot_lcurve (optional): A parameter for plotting the L-curve. By
+             default plot_lcurve = False and L-curve will not be plotted. If
+             plot_lcurve = 1 L-curve will be plotted.
         """
-        if pl!=1:
-            pl = 0
+        if plot_lcurve!=True:
+            plot_lcurve = False
 
-        super().__init__(model, M)
-        self.pl = pl
+        super().__init__(model, measurements)
+        self.plot_lcurve = plot_lcurve
 
     def compute(self):
         """Compute the approximation of source activations using Tikhonov
@@ -92,7 +94,7 @@ class TikhonovInverse(InverseMethod):
                  for lam in lambdas]
         Ia = np.eye(A_gcv[0].shape[0])
 
-        GCV = np.asarray([LA.norm(np.dot((Ia - a_gcv), self.M)) ** 2 /
+        GCV = np.asarray([LA.norm(np.dot((Ia - a_gcv), self.measurements))**2 /
                           np.trace(Ia - a_gcv) ** 2 for a_gcv in A_gcv])
 
         lam_gcv_id = np.argmin(GCV)
@@ -100,10 +102,9 @@ class TikhonovInverse(InverseMethod):
         olam_disp = '%.2e' % Decimal(optimal_lam)
 
         # L-curve
-        pl = self.pl
-        if pl == 1:
-            X_hats = [np.dot(tikhonov(G, l), self.M) for l in lambdas]
-            rn = np.asarray([LA.norm(self.M - np.dot(G, x_h))
+        if self.plot_lcurve == 1:
+            X_hats = [np.dot(tikhonov(G, l),self.measurements) for l in lambdas]
+            rn = np.asarray([LA.norm(self.measurements - np.dot(G, x_h))
                              for x_h in X_hats])
             sn = np.asarray([LA.norm(x_h) for x_h in X_hats])
 
@@ -123,6 +124,6 @@ class TikhonovInverse(InverseMethod):
             pass
 
         Gt = tikhonov(G, optimal_lam)
-        Xht = np.dot(Gt, self.M)
+        Xht = np.dot(Gt, self.measurements)
 
         return Xht

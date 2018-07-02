@@ -3,6 +3,9 @@ from esr.model import load_model
 from esr.model import minimal_mesh
 from os import listdir
 from os.path import join
+
+from esr.metrics import Metric
+from esr.metrics import L2norm
 from esr.inverse_methods import InverseMethod
 from esr.inverse_methods import PseudoInverse
 from esr.inverse_methods import TikhonovInverse

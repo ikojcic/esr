@@ -3,6 +3,9 @@ from esr.model import load_model
 from esr.model import minimal_mesh
 from os import listdir
 from os.path import join
+from esr.inverse_methods import InverseMethod
+from esr.inverse_methods import PseudoInverse
+from esr.inverse_methods import TikhonovInverse
 from esr.source_simulation import SourceSimulator
 from esr.source_simulation import PointSourceSimulator
 from esr.source_simulation import SpreadSourceSimulator

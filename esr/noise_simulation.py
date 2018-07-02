@@ -3,27 +3,26 @@ import numpy as np
 
 class NoiseSimulator():
 
-    def __init__(self, m):
+    def __init__(self, measurements):
         """
         Parent class for noise simulators.
         Args:
-             m: Measurements (M/EEG signals).
+             measurements: Measurements (M/EEG signals).
         Raises:
-             TypeError: m must be convertible to a numpy array of floats.
+             TypeError: measurements must be convertible to a numpy array of
+             floats.
              NotImplementedError: If add_noise method is not implemented in
              the child class.
         """
 
-        if m is None:
-            raise TypeError('\'m\' cannot be None')
+        if not isinstance(measurements, np.ndarray):
+            try:
+                measurements = np.array(measurements, dtype=np.float64)
+            except Exception:
+                raise TypeError('\'measurements\' must be convertible to a numpy '
+                                'array of floats.')
 
-        try:
-            m = np.array(m, dtype=np.float64)
-        except Exception:
-            raise TypeError('\'m\' must be convertible to a numpy array '
-                            'of floats.')
-
-        self.m = m
+        self.measurements = measurements
 
     def add_noise(self):
         raise NotImplementedError
@@ -31,36 +30,41 @@ class NoiseSimulator():
 
 class GaussianNoiseSimulator(NoiseSimulator):
 
-    def __init__(self, m, SNR = None):
+    def __init__(self, measurements, snr=10.0):
         """
         Gaussian noise simulator.
         Args:
-             SNR: Signal-to-noise ratio. Must be an integer or a float.
+             snr: Signal-to-noise ratio. Must be an integer or a float.
         Raises:
              ValueError: If SNR is not an integer or a float.
         """
-        if SNR is None:
-            SNR = 10
 
-        try:
-            SNR = float(SNR)
-        except Exception:
-            raise ValueError('\'SNR\' must be convertible to a float.')
+        if isinstance(snr, list) and len(snr)==1:
+            try:
+                snr = float(snr[0])
+            except Exception:
+                raise ValueError('\'snr\' must be convertible to a float.')
 
-        super().__init__(m)
-        self.SNR = SNR
+        if not isinstance(snr, float):
+            try:
+                snr = float(snr)
+            except Exception:
+                raise ValueError('\'snr\' must be convertible to a float.')
+
+        super().__init__(measurements)
+        self.snr = snr
 
     def add_noise(self):
         """Returns simulated measurements with additive white Gaussian noise."""
 
-        varS = np.var(self.m)
-        varN = varS/ self.SNR
+        varS = np.var(self.measurements)
+        varN = varS/ self.snr
         sigmaN = np.sqrt(varN)
-        nb_sensors = self.m.shape[0]
-        T = self.m.shape[1]
+        nb_sensors = self.measurements.shape[0]
+        T = self.measurements.shape[1]
         N = np.random.normal(0, sigmaN, [nb_sensors, T])
-        self.m = self.m + N
-        return self.m
+        self.measurements = self.measurements + N
+        return self.measurements
 
 
 class NoiselessSimulator(NoiseSimulator):
@@ -68,6 +72,4 @@ class NoiselessSimulator(NoiseSimulator):
     def add_noise(self):
         """Returns simulated noise-free measurements."""
 
-        return self.m
-
-
+        return self.measurements

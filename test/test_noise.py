@@ -31,7 +31,7 @@ def minimal_model():
     cortex = minimal_mesh()
     forward = np.array(np.ones((3, 4)))
     forward_df = pd.DataFrame(forward)
-    model = esr.model.Model()
+    model = esr.model.Model(cortex, forward_df)
     model.cortex = cortex
     model.forward = forward_df
 
@@ -41,6 +41,7 @@ def minimal_model():
     model.cortex.transform_to(CoordinateSystem.RAS)
 
     return model
+
 
 def simple_measurements():
     """Returns simulated noiseless measurements for point source simulation."""
@@ -64,12 +65,14 @@ class TestNoiseSimulator(unittest.TestCase):
         """Test the __init__ method."""
 
         # Create simple measurements
-        m = simple_measurements()
-        noise_model = NoiseSimulator(m)
-        np.testing.assert_array_almost_equal(noise_model.m, m)
+        measurements = simple_measurements()
+        noise_model = NoiseSimulator(measurements)
+        np.testing.assert_array_almost_equal(noise_model.measurements,
+                                             measurements)
 
-        # m must be a numpy array of floats.
-        self.assertRaises(TypeError, NoiseSimulator, None)
+        # measurements must be a numpy array of floats.
+        incorrect_measurements = ['hello']
+        self.assertRaises(TypeError, NoiseSimulator, incorrect_measurements)
 
     def test_add_noise(self):
         """Test if the add_noise method is implemented."""
@@ -85,27 +88,27 @@ class TestGaussianNoiseSimulator(unittest.TestCase):
         """Test the init method."""
 
         m = simple_measurements()
-        SNR = 15
-        gaussian_noise_model = GaussianNoiseSimulator(m, SNR = SNR)
-        self.assertEqual(gaussian_noise_model.SNR, SNR)
+        snr = 15
+        gaussian_noise_model = GaussianNoiseSimulator(m, snr=snr)
+        self.assertEqual(gaussian_noise_model.snr, snr)
 
-        # SNR must be an integer or a float.
-        incorrect_SNR = 'ten'
-        self.assertRaises(ValueError, GaussianNoiseSimulator, m, incorrect_SNR)
+        # snr must be an integer or a float.
+        incorrect_snr = 'ten'
+        self.assertRaises(ValueError, GaussianNoiseSimulator, m, incorrect_snr)
 
     def test_add_noise(self):
         """Test the add_noise method. """
 
         m = simple_measurements()
-        SNR = 15
-        gaussian_noise_model = GaussianNoiseSimulator(m, SNR = SNR)
+        snr = 15
+        gaussian_noise_model = GaussianNoiseSimulator(m, snr=snr)
         noisy_m = gaussian_noise_model.add_noise()
         noise = noisy_m - m
 
         # Test the properties of the noise.
         varN = np.var(noise)
-        expected_varN = np.var(m)/SNR
-        np.testing.assert_allclose(varN, expected_varN,  atol=1e+1)
+        expected_varN = np.var(m) / snr
+        np.testing.assert_allclose(varN, expected_varN, atol=1e+1)
 
 
 class TestNoiselessSimulator(unittest.TestCase):
@@ -113,7 +116,8 @@ class TestNoiselessSimulator(unittest.TestCase):
 
     def test_add_noise(self):
         """Test the add_noise method."""
-        
-        m = simple_measurements()
-        noiseless_model = NoiselessSimulator(m)
-        np.testing.assert_array_almost_equal(noiseless_model.m, m)
+
+        measurements = simple_measurements()
+        noiseless_model = NoiselessSimulator(measurements)
+        np.testing.assert_array_almost_equal(noiseless_model.measurements,
+                                             measurements)

@@ -6,6 +6,9 @@ from os.path import join
 from esr.source_simulation import SourceSimulator
 from esr.source_simulation import PointSourceSimulator
 from esr.source_simulation import SpreadSourceSimulator
+from esr.noise_simulation import NoiseSimulator
+from esr.noise_simulation import GaussianNoiseSimulator
+from esr.noise_simulation import NoiselessSimulator
 
 
 def load_models(models_path):
